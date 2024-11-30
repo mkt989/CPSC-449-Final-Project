@@ -4,6 +4,7 @@ Deborah Shaw 885136325<br />
 Qing Gao 885087676<br />
 Jose Diaz 886411032<br />
 
+## Instruction
 For this project, you are required to develop an application using any tech stack of your choice. Your project must meet the following criteria:
 1.	Utilize a non-relational database (e.g., MongoDB, DynamoDB).
 2.	Incorporate a relational database (e.g., MySQL, PostgreSQL).
