@@ -1,9 +1,8 @@
-Team members:
-Samuel Luong 888059979
-Deborah Shaw 885136325
-Qing Gao 885087676
-Jose Diaz 886411032
-
+**Team members**:<br />
+Samuel Luong 888059979<br />
+Deborah Shaw 885136325<br />
+Qing Gao 885087676<br />
+Jose Diaz 886411032<br />
 
 For this project, you are required to develop an application using any tech stack of your choice. Your project must meet the following criteria:
 1.	Utilize a non-relational database (e.g., MongoDB, DynamoDB).
