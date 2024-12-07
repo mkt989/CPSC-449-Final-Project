@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Recipes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Browse Recipes</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="add_recipe.html">Add Recipe</a>
+        </nav>
+    </header>
+    <main>
+        <form method="GET" action="/search">
+            <input type="text" name="query" placeholder="Search recipes..." required>
+            <button type="submit">Search</button>
+        </form>
+        <div id="recipe-list">
+            <!-- recipes will be loaded here -->
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Recipe Explorer</p>
+    </footer>
+</body>
+</html>

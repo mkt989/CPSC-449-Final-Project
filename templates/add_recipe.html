@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Recipe</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Add a New Recipe</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="browse.html">Browse Recipes</a>
+        </nav>
+    </header>
+    <main>
+        <form action="/add_recipe" method="POST" enctype="multipart/form-data">
+            <label for="title">Recipe Title:</label>
+            <input type="text" id="title" name="title" required>
+            
+            <label for="category">Category:</label>
+            <input type="text" id="category" name="category" required>
+            
+            <label for="ingredients">Ingredients:</label>
+            <textarea id="ingredients" name="ingredients" rows="5" required></textarea>
+            
+            <label for="instructions">Instructions:</label>
+            <textarea id="instructions" name="instructions" rows="5" required></textarea>
+            
+            <label for="image">Upload Image:</label>
+            <input type="file" id="image" name="image" accept="image/*">
+            
+            <button type="submit">Add Recipe</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2024 Recipe Explorer</p>
+    </footer>
+</body>
+</html>
