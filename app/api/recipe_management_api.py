@@ -63,6 +63,7 @@ def update_recipe(current_user, recipe_id):
             else:
                 return jsonify({"message": "Invalid category ID."}), 400
         elif hasattr(recipe, key): #check if the attribute exists in the db
+            print(key + ":" + value)
             setattr(recipe, key, value) #update recipe attribute with new value
     db.session.commit()
     return jsonify({
@@ -70,7 +71,7 @@ def update_recipe(current_user, recipe_id):
         "updated_recipe": {
             "recipe_name": recipe.recipe_name,
             "ingredients": recipe.ingredients,
-            "prep_time": recipe.prep_time,
+            "prep_time": minutes_to_hours(recipe.prep_time),
             "category": recipe.category.category_name,
             "category_id": recipe.category_id,
             "instructions": recipe.instructions,
