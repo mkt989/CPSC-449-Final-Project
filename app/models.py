@@ -9,36 +9,38 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False) 
     role = db.Column(db.String(20), default='user')
     
-    def __init__(self, email, password, role='user'):
-        self.email = email
-        self.password = bcrypt.generate_password_hash(password)
-        self.role = role
+   # def __init__(self, password):
+        #self.password = bcrypt.generate_password_hash(password)
 
+class RecipeCategory(db.Model):
+    __tablename__='categories'
+    id = db.Column(db.Integer, primary_key=True)
+    category_name = db.Column(db.String(50), nullable=False)
+
+    recipes = db.relationship('Recipe', back_populates='category' ,cascade='all, delete-orphan')
+    
 class Recipe(db.Model):
     __tablename__ = 'recipes'
     id = db.Column(db.Integer, primary_key=True)
     recipe_name = db.Column(db.String(100), nullable=False)
+    ingredients = db.Column(db.Text, nullable=False)
+    prep_time = db.Column(db.Integer, nullable=False)  #Preparation time in minutes
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)  
     instructions = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    image_url = db.Column(db.String(255), nullable=True)
 
-    ingredients = db.relationship('RecipeIngredient', back_populates='recipe')
+    category = db.relationship('RecipeCategory', back_populates='recipes')
 
-class Ingredient(db.Model):
-    __tablename__ = 'ingredients'
+    ratings = db.relationship('RecipeRating', back_populates='recipe', cascade='all, delete-orphan')
+
+class RecipeRating(db.Model):
+    __tablename__ = 'recipe_ratings'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True,nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    rating = db.Column(db.Float, nullable=False) 
 
-    #establish relationship with RecipeIngredient
-    recipe_ingredient = db.relationship('RecipeIngredient', back_populates='ingredient')
-
-class RecipeIngredient(db.Model):
-    __tablename__ ='recipe_ingredients'
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), primary_key=True)
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.id'), primary_key=True)
-    quantity = db.Column(db.String, nullable=False)
-
-    #relationship with recipe and ingredient
-    recipe = db.relationship('Recipe', back_populates='ingredients')
-    ingredient = db.relationship('Ingredient', back_populates='recipe_ingredient')
-
-
+    #Relationship with Recipe
+    recipe = db.relationship('Recipe', back_populates='ratings')

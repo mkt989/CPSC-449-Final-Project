@@ -24,16 +24,9 @@ def token_required(func):
 def admin_required(func):
     @wraps(func)
     def decorated(current_user, *args, **kwargs):
+        if current_user == None:
+            return jsonify({"message" : "You must be logged in to access this."}), 403
         if current_user.role != 'admin':
             return jsonify({"message" : "Access denied. Admin privileges only!"}), 403
-        return func(current_user, *args, **kwargs)
-    return decorated
-
-# Decorator that restricts access to a view function for users only.
-def user_only(func):
-    @wraps(func)
-    def decorated(current_user, *args, **kwargs):
-        if current_user.role != 'user':
-            return jsonify({"message" : "This is for users only!"}), 403
         return func(current_user, *args, **kwargs)
     return decorated

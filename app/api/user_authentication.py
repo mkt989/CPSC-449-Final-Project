@@ -11,7 +11,7 @@ email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 
 
 @user_authentication_api.route('/register', methods=['POST'])
-def register_user():
+def register():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
     email = request.json.get("email", None)
@@ -29,7 +29,7 @@ def register_user():
     elif User.query.filter_by(email=email).first():
         return jsonify({"message" : "Email already exists!"}), 409
     
-    new_user = User(username=username, password=password, email=email, role=role)
+    new_user = User(username=username, email=email,password=password, role=role)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message" : "User registered successfully!"}), 201
