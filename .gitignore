@@ -2,4 +2,3 @@ venv/
 .venv/
 *.db
 .env
-*.pyc
