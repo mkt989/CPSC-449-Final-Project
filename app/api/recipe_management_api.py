@@ -18,6 +18,7 @@ def check_image(url):
     except requests.exceptions.RequestException:  
         return False
 
+
 @recipe_management_api.route('/add-recipe', methods=['POST'])
 @token_required
 def add_recipe(current_user):
@@ -40,6 +41,7 @@ def add_recipe(current_user):
     db.session.add(new_recipe)
     db.session.commit()
     return jsonify({"message" : "%s has been added!" %new_recipe.recipe_name})
+
 
 @recipe_management_api.route('/update-recipe/<int:recipe_id>', methods=['PUT'])
 @token_required
@@ -78,6 +80,7 @@ def update_recipe(current_user, recipe_id):
         }  
             }), 200
 
+
 def minutes_to_hours(minutes):
     hours = minutes // 60
     remaining_minutes = minutes % 60
@@ -103,6 +106,7 @@ def show_all_recipes():
         for recipe in recipes
     ]
     return jsonify({"recipes" : recipes_list}), 200
+
 
 @recipe_management_api.route('/browse-recipes/<int:recipe_id>', methods=['GET'])
 def get_recipe(recipe_id):
@@ -131,7 +135,8 @@ def delete_recipe(current_user, recipe_id):
         return jsonify({"message" : "Recipe successfully deleted!"})
     else:
         return jsonify({"message" : "Recipe not found!"}), 404
-    
+
+
 @recipe_management_api.route('/add-category', methods=['POST'])
 @token_required
 @admin_required
@@ -146,6 +151,7 @@ def add_category(current_user):
     db.session.add(new_category)
     db.session.commit()
     return jsonify({"message" : "Category successfully added!"})
+
 
 @recipe_management_api.route('/delete-category/<int:category_id>', methods=['DELETE'])
 @token_required
@@ -364,3 +370,24 @@ def update_rating(current_user, recipe_id):
         "recipe_id": recipe_id,
         "new_rating": new_rating
     }), 200
+
+
+@recipe_management_api.route('/delete-rating/<int:rating_id>', methods=['DELETE'])
+@token_required
+def delete_rating(current_user, rating_id):
+    # Find the rating by ID
+    rating = RecipeRating.query.get(rating_id)
+
+    # Check if the rating exists
+    if not rating:
+        return jsonify({"message": "Rating not found."}), 404
+
+    # Ensure the current user is the owner of the rating
+    if rating.user_id != current_user.id:
+        return jsonify({"message": "You can only delete your own ratings."}), 403
+
+    # Delete the rating
+    db.session.delete(rating)
+    db.session.commit()
+
+    return jsonify({"message": "Rating deleted successfully!"}), 200
