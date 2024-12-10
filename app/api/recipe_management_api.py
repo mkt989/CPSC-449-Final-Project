@@ -240,3 +240,56 @@ def filter_recipes_by_prep_time():
     return jsonify({"recipes": recipes_list}), 200
 
 
+@recipe_management_api.route('/browse-by-rating', methods=['GET'])
+def browse_by_rating():
+    # Join recipes with their ratings, calculate average rating
+    query = db.session.query(
+        Recipe,
+        db.func.coalesce(db.func.avg(RecipeRating.rating), 0).label("average_rating")
+    ).outerjoin(RecipeRating).group_by(Recipe.id).order_by(db.desc("average_rating"))
+    
+    recipes = query.all()
+
+    recipes_list = [
+        {
+            "id": recipe.id,
+            "name": recipe.recipe_name,
+            "category": recipe.category.category_name,
+            "ingredients": recipe.ingredients,
+            "prep_time": recipe.prep_time,
+            "instructions": recipe.instructions,
+            "average_rating": float(average_rating)
+        }
+        for recipe, average_rating in recipes
+    ]
+
+    return jsonify({"recipes": recipes_list}), 200
+
+
+@recipe_management_api.route('/filter-by-rating', methods=['GET'])
+def filter_by_rating():
+    # Get the minimum rating from user input
+    min_rating = float(request.args.get('min_rating', 0))  # Default is 0
+
+    # Query recipes with their average ratings
+    query = db.session.query(
+        Recipe,
+        db.func.coalesce(db.func.avg(RecipeRating.rating), 0).label("average_rating")
+    ).outerjoin(RecipeRating).group_by(Recipe.id).having(db.func.coalesce(db.func.avg(RecipeRating.rating), 0) >= min_rating)
+
+    recipes = query.all()
+
+    recipes_list = [
+        {
+            "id": recipe.id,
+            "name": recipe.recipe_name,
+            "category": recipe.category.category_name,
+            "ingredients": recipe.ingredients,
+            "prep_time": recipe.prep_time,
+            "instructions": recipe.instructions,
+            "average_rating": float(average_rating)
+        }
+        for recipe, average_rating in recipes
+    ]
+
+    return jsonify({"recipes": recipes_list}), 200
