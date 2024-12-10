@@ -293,3 +293,35 @@ def filter_by_rating():
     ]
 
     return jsonify({"recipes": recipes_list}), 200
+
+
+@recipe_management_api.route('/add-rating/<int:recipe_id>', methods=['POST'])
+@token_required
+def add_rating(current_user, recipe_id):
+    # Get the rating from the user input
+    rating = request.json.get("rating", None)
+
+    # Validate the rating
+    if rating is None or not (0 <= rating <= 5):
+        return jsonify({"message": "Rating must be between 0 and 5."}), 400
+
+    # Check if the recipe exists
+    recipe = Recipe.query.get(recipe_id)
+    if not recipe:
+        return jsonify({"message": "Recipe not found."}), 404
+
+    # Check if the user has already rated the recipe
+    existing_rating = RecipeRating.query.filter_by(recipe_id=recipe_id, user_id=current_user.id).first()
+    if existing_rating:
+        return jsonify({"message": "You have already rated this recipe. Please update your rating instead."}), 400
+
+    # Add the rating
+    new_rating = RecipeRating(recipe_id=recipe_id, user_id=current_user.id, rating=rating)
+    db.session.add(new_rating)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Rating added successfully!",
+        "recipe_id": recipe_id,
+        "rating": rating
+    }), 201
