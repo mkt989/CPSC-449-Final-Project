@@ -172,3 +172,71 @@ def get_categories():
     ]
 
     return jsonify({"categories" : category_list})
+
+
+@recipe_management_api.route('/filter-by-category', methods=['GET'])
+def filter_recipes_by_category():
+    # Get the category name from user input
+    category_name = request.args.get('category', None)
+
+    # Validate input
+    if not category_name:
+        return jsonify({"message": "Category name is required!"}), 400
+
+    # Find the category in the database
+    category = RecipeCategory.query.filter_by(category_name=category_name).first()
+    if not category:
+        return jsonify({"message": "Category not found!"}), 404
+
+    # Query recipes for the specified category
+    recipes = Recipe.query.filter_by(category_id=category.id).all()
+
+    recipes_list = [
+        {
+            "id": recipe.id,
+            "name": recipe.recipe_name,
+            "prep_time": recipe.prep_time,
+            "ingredients": recipe.ingredients,
+            "instructions": recipe.instructions,
+            "category": recipe.category.category_name,
+            "image_url": recipe.image_url,
+        }
+        for recipe in recipes
+    ]
+
+    return jsonify({"recipes": recipes_list}), 200
+
+
+@recipe_management_api.route('/filter-by-preptime', methods=['GET'])
+def filter_recipes_by_prep_time():
+    # Get query from user input
+    min_prep_time = request.args.get('min', type=int, default=0)  # Default to 0
+    max_prep_time = request.args.get('max', type=int, default=None)  # Default to no upper limit
+
+    # Validate input
+    if min_prep_time < 0:
+        return jsonify({"message": "Minimum preparation time cannot be negative!"}), 400
+
+    # Query recipes within the specified prep time range
+    query = Recipe.query.filter(Recipe.prep_time >= min_prep_time)
+    if max_prep_time is not None:
+        query = query.filter(Recipe.prep_time <= max_prep_time)
+
+    recipes = query.all()
+
+    recipes_list = [
+        {
+            "id": recipe.id,
+            "name": recipe.recipe_name,
+            "prep_time": recipe.prep_time,
+            "ingredients": recipe.ingredients,
+            "instructions": recipe.instructions,
+            "category": recipe.category.category_name,
+            "image_url": recipe.image_url,
+        }
+        for recipe in recipes
+    ]
+
+    return jsonify({"recipes": recipes_list}), 200
+
+
