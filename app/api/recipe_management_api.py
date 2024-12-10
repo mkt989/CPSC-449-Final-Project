@@ -6,6 +6,8 @@ import requests
 from app.extensions import db
 import redis
 redis_client = redis.Redis(host='localhost', port=6379, db=0)
+import json
+
 
 recipe_management_api = Blueprint('recipe_management_api', __name__)
 
@@ -171,6 +173,10 @@ def delete_recipe(current_user, recipe_id):
 @token_required
 @admin_required
 def add_category(current_user):
+    print("request.data:", request.data)  # Raw request body
+    print("request.is_json:", request.is_json)  # Whether Flask thinks it's JSON
+    print("request.json:", request.json)  # Parsed JSON data
+    
     category_name = request.json.get("name", None)
     category = RecipeCategory.query.filter_by(
         category_name=category_name).first()
@@ -226,6 +232,7 @@ def filter_recipes_by_category():
 
     if cached_data:
         recipes_list = json.loads(cached_data)
+        source="cache"
     else:
         category = RecipeCategory.query.filter_by(
             category_name=category_name).first()
@@ -247,8 +254,11 @@ def filter_recipes_by_category():
             }
             for recipe in recipes
         ]
+        redis_client.setex(cache_key, 600, json.dumps(recipes_list))  # Cache for 10 minutes
+        source="database"
 
-    return jsonify({"recipes": recipes_list}), 200
+
+    return jsonify({"source":source,"recipes": recipes_list}), 200
 
 
 @recipe_management_api.route('/filter-by-preptime', methods=['GET'])

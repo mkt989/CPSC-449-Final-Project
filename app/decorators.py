@@ -13,26 +13,22 @@ def token_required(func):
         if not token:
             return jsonify({'Alert!': "Token missing!"}), 403
         
+        # Retrieve the user_id from Redis
         user_id = redis_client.get(f"session:{token}")
         if not user_id:
             return jsonify({"Alert!": "Token expired or invalid!"}), 403
-        #TODO:redirect to login page?
-        #return redirect(url_for('user_authentication_api.login'))
+
+        # Query the database to get the User object
+        current_user = User.query.get(user_id.decode("utf-8"))
+        if not current_user:
+            return jsonify({'Alert!': "User not found!"}), 404
         
-        # try:
-        #     payload = jwt.decode(
-        #         token, current_app.config['SECRET_KEY'], algorithms=['HS512', 'HS256'])
-        #     current_user = User.query.filter_by(id=payload['user_id']).first()
-        # except:
-        #     return jsonify({'Alert!': "Invalid token!"}), 403
-        # extend the expiration in Redis
+        # Optionally, extend the expiration of the Redis session
+        redis_client.expire(f"session:{token}", 1800)  # Extend for another 30 minutes
         
-        
-        # redis_client.expire(f"session:{token}", 60)
-        
-        
-        return func(user_id.decode("utf-8"), *args, **kwargs)
+        return func(current_user, *args, **kwargs)
     return decorated
+  
 
 
 #decorator method to make sure admin only endpoints are only accessed by admin
