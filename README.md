@@ -4,6 +4,9 @@ Deborah Shaw 885136325<br />
 Qing Gao 885087676<br />
 Jose Diaz 886411032<br />
 
+This project is a Recipe Management API designed to facilitate the creation, browsing, categorization, and rating of recipes. Built with Flask, it enables users to perform CRUD (Create, Read, Update, Delete) operations on recipes and recipe categories while ensuring secure access through token-based authentication for user-specific actions. Additionally, the API supports caching mechanisms using Redis to enhance performance for frequent queries, such as retrieving all recipes or filtering by categories and ratings. The system also incorporates user-based recipe ratings, enabling users to add, update, and delete their feedback on recipes. With a focus on scalability and usability, this API serves as a robust backend solution for recipe management applications.
+
+
 ## Recipe Management
 
 1. Add Recipe
