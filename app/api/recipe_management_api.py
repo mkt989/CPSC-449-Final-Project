@@ -100,20 +100,28 @@ def minutes_to_hours(minutes):
 
 @recipe_management_api.route('/browse-recipes', methods=['GET'])
 def show_all_recipes():
-    recipes = Recipe.query.all()
+    cache_key = "all_recipes"
+    cached_data = redis_client.get(cache_key)
 
-    recipes_list = [
-        {
-            "id": recipe.id,
-            "name": recipe.recipe_name,
-            "category": recipe.category.category_name,
-            "ingredients": recipe.ingredients,
-            "preparation time": minutes_to_hours(recipe.prep_time),
-            "instructions": recipe.instructions
-        }
-        for recipe in recipes
-    ]
-    return jsonify({"recipes": recipes_list}), 200
+    if cached_data:
+        recipes_list = json.loads(cached_data)
+        source="cache"
+    else:
+        recipes = Recipe.query.all()
+        recipes_list = [
+            {
+                "id": recipe.id,
+                "name": recipe.recipe_name,
+                "category": recipe.category.category_name,
+                "ingredients": recipe.ingredients,
+                "preparation time": minutes_to_hours(recipe.prep_time),
+                "instructions": recipe.instructions
+            } 
+            for recipe in recipes
+        ]
+        redis_client.setex(cache_key, 600, json.dumps(recipes_list))  # Cache for 10 minutes
+        source="database"
+    return jsonify({"source":source,"recipes": recipes_list}), 200
 
 
 @recipe_management_api.route('/browse-recipes/<int:recipe_id>', methods=['GET'])
