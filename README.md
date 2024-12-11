@@ -239,3 +239,16 @@ Caching is implemented using **Redis** for the following features:
 4. **Filter Recipes by Category**: Cached filtered results by category.
 
 ---
+
+## Future Plans
+
+1. **Frontend Development**  
+   - Build a user-friendly web interface for recipe browsing, management, and rating.
+   - Some pages have been implemented, but they are currently incomplete and not yet connected to the backend API.
+
+2. **AI Integration**  
+   - Incorporate AI capabilities to suggest recipes based on available ingredients.
+   - Provide personalized recipe recommendations based on user preferences and history.
+   - Integrate AI-driven categorization and tagging for recipes.
+
+---
